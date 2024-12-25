@@ -1,0 +1,108 @@
+<html>
+<head>
+	<title>Hamming code</title>
+	<script>
+	function code(){
+		let mes = document.getElementById('inputMessage').value;
+		let mes0 = Number(mes[0]);
+		let mes1 = Number(mes[1]);
+		let mes2 = Number(mes[2]);
+		let mes3 = Number(mes[3]);
+		
+		if ((mes0 < 2) && (mes1 < 2) && (mes2 < 2) && (mes3 < 2)){ //checking for the correctness of the line input
+		
+		if ((mes0+mes1+mes3)%2==0)
+			mes += '0';
+		else
+			mes += '1';
+		if ((mes1+mes2+mes3)%2==0)
+			mes += '0';
+		else
+			mes += '1';
+		if ((mes0+mes2+mes3)%2==0)
+			mes += '0';
+		else
+			mes += '1'; 
+		//getting a string with control bits
+		document.getElementById('codedMessage').value = mes; 
+		
+		function getRandomInt(max){
+			return Math.floor(Math.random()*max);
+		}
+		let r = getRandomInt(7);
+		let errMes = mes.slice(0,r) + String((Number(mes[r])+1)%2) + mes.slice(r+1, mes.lenght);  //lightning shoots at a random character
+		
+		document.getElementById('errMessage').value = errMes;
+		} else {
+			alert('error. please enter 4 characters using only 0 and 1')
+		}
+	}
+	
+	function decode(){
+		let errMes = document.getElementById('errMessage').value;
+		let erMes0 = Number(errMes[0]);
+		let erMes1 = Number(errMes[1]);
+		let erMes2 = Number(errMes[2]);
+		let erMes3 = Number(errMes[3]);
+		let erMes4 = Number(errMes[4]);
+		let erMes5 = Number(errMes[5]);
+		let erMes6 = Number(errMes[6]);
+		let flag0 = flag1 = flag2 = flag = 0;
+		let errMes2 = errMes;
+		
+		if ((erMes0 + erMes1 + erMes3 + erMes4)%2 != 0)
+			flag0 = 1;
+		if ((erMes1 + erMes2 + erMes3 + erMes5)%2 != 0)     
+			flag1 = 1;
+		if ((erMes0 + erMes2 + erMes3 + erMes6)%2 !=0)
+			flag2 = 1;
+		
+		let err = 0;
+		let decodMes = '';
+		//finding and fixing the error
+		if (flag0 == 1 && flag1 == 1 && flag2 == 1){
+			decodMes = errMes.slice(0,3)+String((erMes3+1)%2)+errMes.slice(4,errMes.lenght);
+			flag = 1;
+			err = 4;
+		} else {
+			if (flag0 == 1 && flag1 == 1){
+				flag = 1;
+				err = 2;
+				decodMes = errMes[0]+String((erMes1+1)%2)+errMes.slice(2,errMes.lenght);
+			} if (flag1 == 1 && flag2 == 1){
+				flag = 1;
+				err = 3;
+				decodMes = errMes.slice(0,2)+String((erMes2+1)%2)+errMes.slice(3,errMes.lenght);
+			} if (flag0 == 1 && flag2 == 1){
+				flag = 1;
+				err = 1;
+				decodMes = String((erMes0+1)%2)+errMes.slice(1,errMes.lenght);
+			}
+		}
+			
+		if (flag == 0){
+			if (flag0 == 1)
+				decodMes = errMes.slice(0,4)+String((erMes4+1)%2)+errMes.slice(5,errMes.lenght);
+			if (flag1 == 1)
+				decodMes = errMes.slice(0,5)+String((erMes5+1)%2)+errMes.slice(6,errMes.lenght);
+			if (flag2 == 1)
+				decodMes = errMes.slice(0,6)+String((erMes6+1)%2);
+			err = 'error in control bit'
+		}
+		
+		document.getElementById('originalMessage').value = decodMes .slice(0, 4);
+		document.getElementById('errNumber').value = err;
+	}
+	</script>
+</head>
+<body>
+	<h1>My Hamming Code</h1>
+	<p><input type='text' id='inputMessage' maxlength = '4'/> four bites</p>
+	<p><input type='button' value='To code' onClick='code()'/></p>
+	<p><input type='text' id='codedMessage' maxlength = '7'/> encoded message </p>
+	<p><input type='text' id='errMessage' maxlength = '7'/> lightning strike</p>
+	<p><input type='button' value='To decode' onClick='decode()'/></p>
+	<p><input type='text' id='originalMessage'/> decoded message </p>
+	<p><input type='text' id='errNumber'/> the number of error symbol </p>
+</body>
+</html>
